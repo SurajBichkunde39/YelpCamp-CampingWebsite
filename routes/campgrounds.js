@@ -38,7 +38,7 @@ router.post("/",function(req,res){
 
 
 //NEW - take info about new campground
-router.get("/new",function(req,res){
+router.get("/new",isLoggedIn,function(req,res){
 	res.render("campgrounds/new",{});
 });
 

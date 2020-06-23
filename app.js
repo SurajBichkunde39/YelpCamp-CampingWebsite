@@ -19,7 +19,7 @@ var commentRoutes      = require('./routes/comments.js'),
 var uri = "mongodb://localhost:27017/yelp_camp";
 mongoose.connect(uri, { useUnifiedTopology: true , useNewUrlParser:true });
 mongoose.set('useFindAndModify', false);
-seedDB();
+// seedDB();
 
 var app = express();
 app.set("view engine" , "ejs");
