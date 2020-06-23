@@ -21,16 +21,22 @@ router.post("/",function(req,res){
 	var name = req.body.name;
 	var img = req.body.img;
 	var description = req.body.description;
+	var author = {
+		id:req.user._id,
+		username:req.user.username,
+	}
 	var newCampfround = {
 		name:name,
 		img:img,
 		description:description,
+		author:author,
 	}
 	//add newly created campgrounds to the database
 	Campground.create(newCampfround,function(err,newCampfround){
 		if(err){
 			console.log(err);
 		}else{
+			console.log(newCampfround);
 			res.redirect('/campgrounds');
 		}
 	});
