@@ -37,7 +37,7 @@ router.post("/",function(req,res){
 		if(err){
 			console.log(err);
 		}else{
-			console.log(newCampfround);
+			req.flash("success","New Campground Created !!")
 			res.redirect('/campgrounds');
 		}
 	});
@@ -54,8 +54,9 @@ router.get("/new",middleware.isLoggedIn,function(req,res){
 router.get("/:id",function(req,res){
 	var id = req.params.id;
 	Campground.findById(id).populate("comments").exec(function(err,foundCampground){
-		if(err){
-			console.log(err);
+		if(err || !foundCampground){
+			req.flash("error","No Campground Found On Given Id");
+			res.redirect('/campgrounds');
 		}else{
 			res.render("campgrounds/show",{campground:foundCampground,});	
 		}
@@ -66,7 +67,8 @@ router.get("/:id",function(req,res){
 router.get('/:id/edit',middleware.checkCampgroundOwnership,function(req,res){
 	var id = req.params.id;
 	Campground.findById(id,function(err,foundCampground){
-		if(err){
+		if(err || !foundCampground){
+			req.flash("No Campground Found");
 			res.redirect('/campgrounds');
 		}else{
 			res.render('campgrounds/edit',{campground:foundCampground});	
@@ -91,6 +93,7 @@ router.delete('/:id',middleware.checkCampgroundOwnership,function(req,res){
 		if(err){
 			res.redirect('/campgrounds');
 		}else{
+			req.flash("success","Successfully Deleted the Campground");
 			res.redirect('/campgrounds');
 		}
 	});

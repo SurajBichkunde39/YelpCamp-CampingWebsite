@@ -7,8 +7,9 @@ var middleware = require("../middleware");
 //NEW
 router.get('/new',middleware.isLoggedIn,function(req,res){
 	Campground.findById(req.params.id,function(err,foundCampground){
-		if(err){
-			console.log(err);
+		if(err || !foundCampground){
+			req.flash("error","No Campground Found");
+			res.redirect('/campgrounds');
 		}else{
 			res.render("comments/new",{campground:foundCampground,});	
 		}
@@ -19,15 +20,14 @@ router.get('/new',middleware.isLoggedIn,function(req,res){
 //CREATE
 router.post('/',middleware.isLoggedIn,function(req,res){
 	Campground.findById(req.params.id,function(err,foundCampground){
-		
-		if(err){
-			console.log(err);
+		if(err || ! foundCampground ){
+			req.flash("error","No Campground Found");
 			res.redirect('/campgrounds');
 		}else{
 			Comment.create(req.body.comment,function(err,createdcomment){
 				if(err){
-					console.log(err);
-					res.redirect('/campgrounds');
+					req.flash("error","No Comment Found");
+					res.redirect('/campgrounds/'+foundCampground);
 				}else{
 					createdcomment.author.id = req.user._id;
 					createdcomment.author.username = req.user.username;
@@ -50,14 +50,20 @@ router.post('/',middleware.isLoggedIn,function(req,res){
 
 //EDIT
 router.get("/:comment_id/edit",middleware.checkCommentOwnership,function(req,res){
-	
-	Comment.findById(req.params.comment_id,function(err,foundComment){
-		let id = req.params.id;
-		if(err){
-			console.log(err);
-			res.redirect('/campgrounds/'+id);
+	Campground.findById(req.params.id,function(err,foundCampground){
+		if(err || !foundCampground){
+			req.flash("error","No Campground Found");
+			res.redirect("/campgrounds");
 		}else{
-			res.render('comments/edit',{campground_id:req.params.id,comment:foundComment});
+			Comment.findById(req.params.comment_id,function(err,foundComment){
+				let id = req.params.id;
+				if(err || !foundComment){
+					req.flash("error","No comment Found");
+					res.redirect('/campgrounds/'+id);
+				}else{
+					res.render('comments/edit',{campground_id:req.params.id,comment:foundComment});
+				}
+			});
 		}
 	});
 });
@@ -81,6 +87,7 @@ router.delete('/:comment_id',middleware.checkCommentOwnership,function(req,res){
 		if(err){
 			res.redirect("back");
 		}else{
+			req.flash("success","Successfully Deleted Comment");
 			res.redirect("/campgrounds/"+req.params.id);
 		}
 	});
