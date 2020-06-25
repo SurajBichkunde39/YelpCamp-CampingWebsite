@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var Campground = require('../models/campground');
 var User = require('../models/user');
+var middleware = require("../middleware");
 
 
 //INDEX - List all the campgrounds
@@ -44,7 +45,7 @@ router.post("/",function(req,res){
 
 
 //NEW - take info about new campground
-router.get("/new",isLoggedIn,function(req,res){
+router.get("/new",middleware.isLoggedIn,function(req,res){
 	res.render("campgrounds/new",{});
 });
 
@@ -61,12 +62,38 @@ router.get("/:id",function(req,res){
 	});
 });
 
-function isLoggedIn(req,res,next){
-	if(req.isAuthenticated()){
-		return next();
-	}else{
-		res.redirect('/login');
-	}
-}
+//EDIT - form to edit campground info
+router.get('/:id/edit',middleware.checkCampgroundOwnership,function(req,res){
+	var id = req.params.id;
+	Campground.findById(id,function(err,foundCampground){
+		if(err){
+			res.redirect('/campgrounds');
+		}else{
+			res.render('campgrounds/edit',{campground:foundCampground});	
+		}
+	});
+});
+
+//UPDATE - save changes done in edit  
+router.put('/:id',middleware.checkCampgroundOwnership,function(req,res){
+	Campground.findByIdAndUpdate(req.params.id,req.body.campground,function(err,updatedCampground){
+		if(err){
+			res.redirect('/campgrounds');
+		}else{
+			res.redirect('/campgrounds/'+updatedCampground._id);
+		}
+	});
+});
+
+//DESTORY - delete the selected campground 
+router.delete('/:id',middleware.checkCampgroundOwnership,function(req,res){
+	Campground.findByIdAndRemove(req.params.id,function(err){
+		if(err){
+			res.redirect('/campgrounds');
+		}else{
+			res.redirect('/campgrounds');
+		}
+	});
+});
 
 module.exports = router;
