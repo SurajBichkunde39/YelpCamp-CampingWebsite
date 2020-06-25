@@ -22,6 +22,7 @@ router.post("/",function(req,res){
 	var name = req.body.name;
 	var img = req.body.img;
 	var description = req.body.description;
+	var price = req.body.price;
 	var author = {
 		id:req.user._id,
 		username:req.user.username,
@@ -29,6 +30,7 @@ router.post("/",function(req,res){
 	var newCampfround = {
 		name:name,
 		img:img,
+		price:price,
 		description:description,
 		author:author,
 	}
