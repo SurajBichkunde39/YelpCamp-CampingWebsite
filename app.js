@@ -16,10 +16,7 @@ var commentRoutes      = require('./routes/comments.js'),
 	indexRoutes        = require('./routes/index.js');
 
 
-
-
-var uri = "mongodb://localhost:27017/yelp_camp";
-mongoose.connect(uri, { useUnifiedTopology: true , useNewUrlParser:true });
+mongoose.connect(process.env.DATABASEURL, { useUnifiedTopology: true , useNewUrlParser:true });
 mongoose.set('useFindAndModify', false);
 // seedDB();
 
