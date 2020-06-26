@@ -17,6 +17,8 @@ var commentRoutes      = require('./routes/comments.js'),
 
 
 mongoose.connect(process.env.DATABASEURL, { useUnifiedTopology: true , useNewUrlParser:true });
+console.log("env database url ", process.env.DATABASEURL);
+// mongoose.connect("mongodb+srv://SurajBichkunde:Suraj@39@yelpcamp-iowmn.mongodb.net/<dbname>?retryWrites=true&w=majority", { useUnifiedTopology: true , useNewUrlParser:true });
 mongoose.set('useFindAndModify', false);
 // seedDB();
 
